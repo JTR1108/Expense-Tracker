@@ -27,17 +27,15 @@
     <button onclick="calc_sum()">calc</button>
     <p id="sum_display">Total: $0.00</p>
 
-    <form id = "form">
         <div class = "input_zone" id = "input_area">
            
         </div>
         <button type="button" onclick="add_expense()">+ Add Expense</button>
-    </form>
 
     <script>
     
     // Declaration for arrays to keep track of info
-    // Also sum
+    // Also sum variable
 
     const names = [];
     const dates = [];
@@ -46,6 +44,7 @@
     var expense_sum = 0;
 
         // Function to create a new expense when the button is pushed
+        // Basically everything important
         function add_expense()
         {
             // Array for categories
@@ -145,7 +144,7 @@
             });
 
             new_price.addEventListener("change", function() {
-                new_row.stored_price = new_price.value;
+                new_row.stored_price = (parseFloat(new_price.value)).toFixed(2);
                 console.log(new_row.stored_price);
             });
 
@@ -162,8 +161,7 @@
          * Goes through the stored variables in every row adding them to array
          * Searches through the prices array using .reduce and sets expense_sum to equal the sum of all entries
          * 
-         * TODO: change prices.push to check if input in empty to avoid NAN 
-         * TODO: add calc_sum to be called in listener events and delete_expense to automatically update the total
+         * TODO: 1. Add calc_sum to be called in listener events and delete_expense to automatically update the total
          * */
         function calc_sum(){
             names.length = 0;
@@ -177,7 +175,13 @@
                 names.push(row.stored_name);
                 dates.push(row.stored_date);
                 categories.push(row.stored_category);
-                prices.push(row.stored_price);
+                // Checks if price is actually something before actually pushing it to prices
+                if (row.stored_price == null){
+                    prices.push(0.00);
+                }
+                else{
+                    prices.push(row.stored_price);
+                }
             });
 
             console.log("Names:", names);
