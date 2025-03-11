@@ -24,12 +24,9 @@
 
 <body style = "background-color: lightgreen">
 
-    <button onclick="calc_sum()">calc</button>
     <p id="sum_display">Total: $0.00</p>
 
-        <div class = "input_zone" id = "input_area">
-           
-        </div>
+        <div class = "input_zone" id = "input_area"></div>
         <button type="button" onclick="add_expense()">+ Add Expense</button>
 
     <script>
@@ -100,6 +97,7 @@
                 // Written as anonymous once again, set to use the delete_expense function on it's respective "row"
                 new_delete.onclick = function() {
                     delete_expense(new_row);
+                    calc_sum();
                 }
 
     
@@ -120,11 +118,13 @@
             new_name.addEventListener("change", function() {
                 new_row.stored_name = new_name.value;
                 console.log(new_row.stored_name);
+                calc_sum();
             });
 
             new_date.addEventListener("change", function() {
                 new_row.stored_date = new_date.value;
                 console.log(new_row.stored_date);
+                calc_sum;
             });
 
             // Temp fix for new_category, won't assign when first created so its set to assign when first interacted with (just clicked on)
@@ -134,6 +134,7 @@
                 new_category.addEventListener("focus", function() {
                     new_row.stored_category = new_category.value;
                     console.log(new_row.stored_category);
+                    calc_sum();
                 });
                 has_focused = true;
             }
@@ -141,15 +142,18 @@
             new_category.addEventListener("change", function() {
                 new_row.stored_category = new_category.value;
                 console.log(new_row.stored_category);
+                calc_sum();
             });
 
             new_price.addEventListener("change", function() {
                 new_row.stored_price = (parseFloat(new_price.value)).toFixed(2);
                 console.log(new_row.stored_price);
+                calc_sum();
             });
 
             // Appends the new row to the overal input area
             document.getElementById("input_area").appendChild(new_row);
+            calc_sum();
         }
 
         // Function for the delete button to remove it's respective row
