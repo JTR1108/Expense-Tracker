@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang = "en-US">
+<html lang = "en">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <title>expense_tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -193,7 +193,7 @@
                 dates.push(row.stored_date);
                 categories.push(row.stored_category);
                 // Checks if price is actually filled out before pushing it to prices array
-                if (row.stored_price == null){
+                if (isNaN(row.stored_price)){
                     prices.push(0.00);
                 }
                 else{
@@ -202,14 +202,17 @@
             });
 
             // Log tests to see if arrayed correctly.
+            console.clear();
             console.log("Names:", names);
             console.log("Dates:", dates);
             console.log("Categories:", categories);
             console.log("Prices:", prices);
+            
 
             expense_sum = (prices.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0)).toFixed(2);
-            console.log(expense_sum);
             document.getElementById("sum_display").textContent = 'Total: $' + expense_sum;
+            console.log("Total:", expense_sum);
+            console.log("Budget:", user_budget);
 
             /* If the budget input area is empty or equals 0 it displays that no budget was entered
             since an empty number input defaults to 0*/
@@ -220,9 +223,11 @@
             // TODO: find a way to differentiate between an empty budget input versus when the user literally enters "0" as the budget
             if(user_budget == 0){
                 document.getElementById("budget_display").textContent = "No budget entered";
+                console.log("NA Difference");
             }
             else{
                 var difference = (user_budget - expense_sum).toFixed(2);
+                console.log("Difference (Budget - Sum):", difference);
                 if(difference > 0){
                     document.getElementById("budget_display").textContent = "$" + difference + " under budget";
                 }
