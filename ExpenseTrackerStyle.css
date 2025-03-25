@@ -21,9 +21,10 @@ body {
   /* Subtle box shadow for a "card" look */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   /* Center and limit width */
-  width: 80%;
-  margin: 20px auto;
+  width: 60%;
+  margin: 20px;
   padding: 20px;
+  align-items: left;
 }
 
 /* Each row of inputs (Name, Date, Category, Price, Delete button) */
@@ -33,7 +34,7 @@ body {
   grid-template-columns: repeat(4, 1fr) auto;
   gap: 10px;
   margin-bottom: 10px;
-  align-items: center;
+  align-items: left;
 }
 
 /* Input fields and delete button styling */
