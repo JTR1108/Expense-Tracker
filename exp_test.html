@@ -38,7 +38,7 @@
     <script>
     
     // Declaration for arrays to keep track of info
-    // Also sum variable
+    // Also variables for sum, entered budget, and the difference
     const names = [];
     const dates = [];
     const categories = [];
@@ -50,7 +50,7 @@
     // Function to set the budget variable and calls the calc_sum function
     function set_budget() {
         user_budget = document.getElementById("budget").value;
-        console.log(user_budget);
+        console.log("Budget: " + user_budget);
         calc_sum();
 
     }
@@ -82,8 +82,7 @@
                 new_category.type = "select";
                 new_category.classList.add("input_box");
 
-                // AI was reffered to, turns out it needed to be called as an anonymous function in order for the .forEach to work properly with the array
-                // Gonna call everything as anonymous 
+                // AI was reffered to for this, turns out it needed to be called as an "anonymous function" in order for the .forEach to work properly with the array 
                 // Thanks js, god forbid you work like everything else
                 options.forEach(function(option_text) {
                     var option = document.createElement("option");
@@ -108,7 +107,7 @@
                 new_delete.type = "button";
                 new_delete.classList.add("input_box");
 
-                // Written as anonymous once again, set to use the delete_expense function on it's respective "row"
+                // Return of the dastardly ANONYMOUS FUNCTION, set to use the delete_expense function on it's respective "row" and re-calc the sum
                 new_delete.onclick = function() {
                     delete_expense(new_row);
                     calc_sum();
@@ -127,7 +126,8 @@
             new_row.stored_date;
             new_row.stored_category;
             new_row.stored_price;
-
+            
+            // THE ANONYMOUS FUNCTION STRIKES YET AGAIN
             // Listener events to trigger for whenver the user interacts with the inputs to assign them to their respective variables
             new_name.addEventListener("change", function() {
                 new_row.stored_name = new_name.value;
@@ -192,7 +192,7 @@
                 names.push(row.stored_name);
                 dates.push(row.stored_date);
                 categories.push(row.stored_category);
-                // Checks if price is actually something before actually pushing it to prices
+                // Checks if price is actually filled out before pushing it to prices array
                 if (row.stored_price == null){
                     prices.push(0.00);
                 }
@@ -212,14 +212,14 @@
             document.getElementById("sum_display").textContent = 'Total: $' + expense_sum;
 
             /* If the budget input area is empty or equals 0 it displays that no budget was entered
-            since an empty number input defaults to 00*/
+            since an empty number input defaults to 0*/
 
             /* If budget is a number, calculates the difference between the budget and sum and display whether
             the user is within, over, or exactly at the budget based on said difference*/
             
-            // TODO: find a way to differentiate between an empty budget input and when the user literally enteres "0" as the budget
+            // TODO: find a way to differentiate between an empty budget input versus when the user literally enters "0" as the budget
             if(user_budget == 0){
-                document.getElementById("budget_display").textContent = "No budget entered"
+                document.getElementById("budget_display").textContent = "No budget entered";
             }
             else{
                 var difference = (user_budget - expense_sum).toFixed(2);
@@ -227,7 +227,8 @@
                     document.getElementById("budget_display").textContent = "$" + difference + " under budget";
                 }
                 else if(difference < 0){
-                    document.getElementById("budget_display").textContent = "$" + Math.abs(difference) + " over budget";
+                    difference = (Math.abs(user_budget - expense_sum)).toFixed(2);
+                    document.getElementById("budget_display").textContent = "$" + difference + " over budget";
                 }
                 else{
                     document.getElementById("budget_display").textContent = "On budget";
