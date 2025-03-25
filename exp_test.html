@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang = "en-US">
 
 <head>
     <meta charset="UTF-8" />
@@ -25,21 +25,35 @@
 <body style = "background-color: lightgreen">
 
     <p id="sum_display">Total: $0.00</p>
-
-        <div class = "input_zone" id = "input_area"></div>
-        <button type="button" onclick="add_expense()">+ Add Expense</button>
+    <p id="budget_display"> No budget entered </p>
+    <div>
+        Budget:
+        <input type="number" id="budget" placeholder="Enter Budget" onchange="set_budget()"> </body>
+    </div>
+    <br>
+    <br>
+    <div class = "input_zone" id = "input_area"></div>
+    <button type="button" onclick="add_expense()">+ Add Expense</button>
 
     <script>
     
     // Declaration for arrays to keep track of info
     // Also sum variable
-
     const names = [];
     const dates = [];
     const categories = [];
     const prices = [];
     var expense_sum = 0;
+    var user_budget = 0;
+    var difference = 0;
 
+    // Function to set the budget variable and calls the calc_sum function
+    function set_budget() {
+        user_budget = document.getElementById("budget").value;
+        console.log(user_budget);
+        calc_sum();
+
+    }
         // Function to create a new expense when the button is pushed
         // Basically everything important
         function add_expense()
@@ -124,10 +138,11 @@
             new_date.addEventListener("change", function() {
                 new_row.stored_date = new_date.value;
                 console.log(new_row.stored_date);
-                calc_sum;
+                calc_sum();
             });
 
             // Temp fix for new_category, won't assign when first created so its set to assign when first interacted with (just clicked on)
+            // TODO: find how to set category to default selection when first created
             var has_focused = false;
 
             if(has_focused == false){
@@ -164,8 +179,6 @@
         /** First resets all arrays to 0 to remove any old info
          * Goes through the stored variables in every row adding them to array
          * Searches through the prices array using .reduce and sets expense_sum to equal the sum of all entries
-         * 
-         * TODO: 1. Add calc_sum to be called in listener events and delete_expense to automatically update the total
          * */
         function calc_sum(){
             names.length = 0;
@@ -188,6 +201,7 @@
                 }
             });
 
+            // Log tests to see if arrayed correctly.
             console.log("Names:", names);
             console.log("Dates:", dates);
             console.log("Categories:", categories);
@@ -195,8 +209,30 @@
 
             expense_sum = (prices.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0)).toFixed(2);
             console.log(expense_sum);
-
             document.getElementById("sum_display").textContent = 'Total: $' + expense_sum;
+
+            /* If the budget input area is empty or equals 0 it displays that no budget was entered
+            since an empty number input defaults to 00*/
+
+            /* If budget is a number, calculates the difference between the budget and sum and display whether
+            the user is within, over, or exactly at the budget based on said difference*/
+            
+            // TODO: find a way to differentiate between an empty budget input and when the user literally enteres "0" as the budget
+            if(user_budget == 0){
+                document.getElementById("budget_display").textContent = "No budget entered"
+            }
+            else{
+                var difference = (user_budget - expense_sum).toFixed(2);
+                if(difference > 0){
+                    document.getElementById("budget_display").textContent = "$" + difference + " under budget";
+                }
+                else if(difference < 0){
+                    document.getElementById("budget_display").textContent = "$" + Math.abs(difference) + " over budget";
+                }
+                else{
+                    document.getElementById("budget_display").textContent = "On budget";
+                }
+            }
         }
 
     </script>
