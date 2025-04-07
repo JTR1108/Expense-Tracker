@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang = "en">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <title>expense_tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="ExpenseTrackerStyle.css">
     <style>
         .input_row{
             margin-bottom: 5px;
@@ -24,17 +25,22 @@
 
 <body style = "background-color: lightgreen">
 
-    <button onclick="calc_sum()">calc</button>
     <p id="sum_display">Total: $0.00</p>
+    <p id="budget_display"> No budget entered </p>
+    <div>
+        Budget:
+        <input type="number" id="budget" placeholder="Enter Budget" onchange="set_budget()"> </body>
+    </div>
+    <br>
+    <br>
+    <div class="input_zone" id="input_area">
+    <!-- Expense rows will be appended here -->
+    <button type="button" onclick="add_expense()">+ Add Expense</button>
+	</div>
 
-    <form id = "form">
-        <div class = "input_zone" id = "input_area">
-           
-        </div>
-        <button type="button" onclick="add_expense()">+ Add Expense</button>
-    </form>
-
-    <head>
+	
+	
+	 <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Import CSV File</title>
@@ -44,31 +50,122 @@
         <pre id="output"></pre>
     
         <script>
+    
+    
             document.getElementById('fileInput').addEventListener('change', function(event) {
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const content = e.target.result;
-                        document.getElementById('output').innerText = content;
+                        
+                        //  ** AI WAS CONSULTED HERE** -- originally wasn't parsing file 
+                        const rows = content.split('\n').map(row => row.trim()).filter(row => row.length > 0);
+                         
+                        rows.forEach(row => {
+                            const cols = row.split(',').map(col => col.trim());
+                            if (cols.length >= 4) { // Expecting [Name, Date, Category, Price]
+                                
+                                // Create new expense row
+                                var options = ["Misc.", "Food", "Travel", "Groceries", "Fun"];
+                                var new_row = document.createElement("div");
+                                new_row.classList.add("input_row");
+            
+                                var new_name = document.createElement("input");
+                                new_name.type = "text";
+                                new_name.value = cols[0];
+                                new_name.classList.add("input_box");
+
+                                // TO FIX : Date doesn't import fully 
+
+                                var new_date = document.createElement("input");
+                                new_date.type = "date";
+                                new_date.value = cols[1];
+                                new_date.classList.add("input_box");
+            
+                                var new_category = document.createElement("select");
+                                new_category.classList.add("input_box");
+                                options.forEach(function(option_text) {
+                                    var option = document.createElement("option");
+                                    option.value = option_text.toLowerCase();
+                                    option.textContent = option_text;
+                                    new_category.appendChild(option);
+                                });
+
+                                // Set category if it matches
+                                const lowerColsCategory = cols[2].toLowerCase();
+                                const foundOption = options.find(opt => opt.toLowerCase() === lowerColsCategory);
+                                if (foundOption) {
+                                    new_category.value = lowerColsCategory;
+                                } else {
+                                    new_category.value = "misc.";
+                                }
+            
+                                var new_price = document.createElement("input");
+                                new_price.type = "number";
+                                new_price.step = "0.01";
+                                new_price.min = "0.00";
+                                new_price.value = parseFloat(cols[3]).toFixed(2);
+                                new_price.classList.add("input_box");
+            
+                                var new_delete = document.createElement("button");
+                                new_delete.textContent = "Delete";
+                                new_delete.type = "button";
+                                new_delete.classList.add("input_box");
+            
+                                // Add delete functionality
+                                new_delete.onclick = function() {
+                                    delete_expense(new_row);
+                                    calc_sum();
+                                }
+            
+                                // Append inputs
+                                new_row.appendChild(new_name);
+                                new_row.appendChild(new_date);
+                                new_row.appendChild(new_category);
+                                new_row.appendChild(new_price);
+                                new_row.appendChild(new_delete);
+            
+                                // Local variables to track data
+                                new_row.stored_name = cols[0];
+                                new_row.stored_date = cols[1];
+                                new_row.stored_category = new_category.value;
+                                new_row.stored_price = parseFloat(cols[3]).toFixed(2);
+            
+                                // Append to page
+                                document.getElementById("input_area").appendChild(new_row);
+                            }
+                        });
+            
+                        // After import, recalculate the total
+                        calc_sum();
                     };
                     reader.readAsText(file);
                 }
             });
-        </script>
+            </script>
 
     <script>
     
     // Declaration for arrays to keep track of info
-    // Also sum
-
+    // Also variables for sum, entered budget, and the difference
     const names = [];
     const dates = [];
     const categories = [];
     const prices = [];
     var expense_sum = 0;
+    var user_budget = 0;
+    var difference = 0;
 
+    // Function to set the budget variable and calls the calc_sum function
+    function set_budget() {
+        user_budget = document.getElementById("budget").value;
+        console.log("Budget: " + user_budget);
+        calc_sum();
+
+    }
         // Function to create a new expense when the button is pushed
+        // Basically everything important
         function add_expense()
         {
             // Array for categories
@@ -95,8 +192,7 @@
                 new_category.type = "select";
                 new_category.classList.add("input_box");
 
-                // AI was reffered to, turns out it needed to be called as an anonymous function in order for the .forEach to work properly with the array
-                // Gonna call everything as anonymous 
+                // AI was reffered to for this, turns out it needed to be called as an "anonymous function" in order for the .forEach to work properly with the array 
                 // Thanks js, god forbid you work like everything else
                 options.forEach(function(option_text) {
                     var option = document.createElement("option");
@@ -121,9 +217,10 @@
                 new_delete.type = "button";
                 new_delete.classList.add("input_box");
 
-                // Written as anonymous once again, set to use the delete_expense function on it's respective "row"
+                // Return of the dastardly ANONYMOUS FUNCTION, set to use the delete_expense function on it's respective "row" and re-calc the sum
                 new_delete.onclick = function() {
                     delete_expense(new_row);
+                    calc_sum();
                 }
 
     
@@ -139,25 +236,30 @@
             new_row.stored_date;
             new_row.stored_category;
             new_row.stored_price;
-
+            
+            // THE ANONYMOUS FUNCTION STRIKES YET AGAIN
             // Listener events to trigger for whenver the user interacts with the inputs to assign them to their respective variables
             new_name.addEventListener("change", function() {
                 new_row.stored_name = new_name.value;
                 console.log(new_row.stored_name);
+                calc_sum();
             });
 
             new_date.addEventListener("change", function() {
                 new_row.stored_date = new_date.value;
                 console.log(new_row.stored_date);
+                calc_sum();
             });
 
             // Temp fix for new_category, won't assign when first created so its set to assign when first interacted with (just clicked on)
+            // TODO: find how to set category to default selection when first created
             var has_focused = false;
 
             if(has_focused == false){
                 new_category.addEventListener("focus", function() {
                     new_row.stored_category = new_category.value;
                     console.log(new_row.stored_category);
+                    calc_sum();
                 });
                 has_focused = true;
             }
@@ -165,15 +267,18 @@
             new_category.addEventListener("change", function() {
                 new_row.stored_category = new_category.value;
                 console.log(new_row.stored_category);
+                calc_sum();
             });
 
             new_price.addEventListener("change", function() {
-                new_row.stored_price = new_price.value;
+                new_row.stored_price = (parseFloat(new_price.value)).toFixed(2);
                 console.log(new_row.stored_price);
+                calc_sum();
             });
 
             // Appends the new row to the overal input area
             document.getElementById("input_area").appendChild(new_row);
+            calc_sum();
         }
 
         // Function for the delete button to remove it's respective row
@@ -184,9 +289,6 @@
         /** First resets all arrays to 0 to remove any old info
          * Goes through the stored variables in every row adding them to array
          * Searches through the prices array using .reduce and sets expense_sum to equal the sum of all entries
-         * 
-         * TODO: change prices.push to check if input in empty to avoid NAN 
-         * TODO: add calc_sum to be called in listener events and delete_expense to automatically update the total
          * */
         function calc_sum(){
             names.length = 0;
@@ -200,18 +302,53 @@
                 names.push(row.stored_name);
                 dates.push(row.stored_date);
                 categories.push(row.stored_category);
-                prices.push(row.stored_price);
+                // Checks if price is actually filled out before pushing it to prices array
+                if (isNaN(row.stored_price)){
+                    prices.push(0.00);
+                }
+                else{
+                    prices.push(row.stored_price);
+                }
             });
 
+            // Log tests to see if arrayed correctly.
+            console.clear();
             console.log("Names:", names);
             console.log("Dates:", dates);
             console.log("Categories:", categories);
             console.log("Prices:", prices);
+            
 
             expense_sum = (prices.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0)).toFixed(2);
-            console.log(expense_sum);
-
             document.getElementById("sum_display").textContent = 'Total: $' + expense_sum;
+            console.log("Total:", expense_sum);
+            console.log("Budget:", user_budget);
+
+            /* If the budget input area is empty or equals 0 it displays that no budget was entered
+            since an empty number input defaults to 0*/
+
+            /* If budget is a number, calculates the difference between the budget and sum and display whether
+            the user is within, over, or exactly at the budget based on said difference*/
+            
+            // TODO: find a way to differentiate between an empty budget input versus when the user literally enters "0" as the budget
+            if(user_budget == 0){
+                document.getElementById("budget_display").textContent = "No budget entered";
+                console.log("NA Difference");
+            }
+            else{
+                var difference = (user_budget - expense_sum).toFixed(2);
+                console.log("Difference (Budget - Sum):", difference);
+                if(difference > 0){
+                    document.getElementById("budget_display").textContent = "$" + difference + " under budget";
+                }
+                else if(difference < 0){
+                    difference = (Math.abs(user_budget - expense_sum)).toFixed(2);
+                    document.getElementById("budget_display").textContent = "$" + difference + " over budget";
+                }
+                else{
+                    document.getElementById("budget_display").textContent = "On budget";
+                }
+            }
         }
 
     </script>
