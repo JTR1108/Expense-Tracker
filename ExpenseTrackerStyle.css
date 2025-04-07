@@ -1,61 +1,144 @@
-/*CSS File for implementing front-end changes without flooding the main html file. */
+/* CSS File for implementing front-end changes without flooding the main HTML file. */
 
 body {
-  background-color: #b1e0a5; 
+  background-color: #a4d197 !important;
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
+  position: relative;
 }
 
-#sum_display {
-  font-size: 1.6em;
-  font-weight: bold;
-  color: #333;
-  margin: 20px;
+/* Title in the Top Left Corner */
+body::before {
+  content: "Expenses Paid";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 2.2em;
+  font-style: italic;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #666;
+  font-weight: 600;
+  z-index: 2;
 }
 
-/* Main container for the expense rows */
-.input_zone {
+/* White Info Box on the Right */
+body::after {
+  content: "";
+  position: absolute;
+  top: 100px;
+  right: 30px;
+  width: 180px;
+  height: 150px;
   background-color: #ffffff;
   border-radius: 8px;
-  /* Subtle box shadow for a "card" look */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  /* Center and limit width */
-  width: 60%;
-  margin: 20px;
-  padding: 20px;
-  align-items: left;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 0;
 }
 
-/* Each row of inputs (Name, Date, Category, Price, Delete button) */
+/* Total & Budget Displays */
+#sum_display {
+  position: absolute;
+  top: 115px;
+  right: 60px;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #388E3C;
+  margin: 0;
+  z-index: 1;
+}
+
+#budget_display {
+  position: absolute;
+  top: 145px;
+  right: 60px;
+  font-size: 0.9em;
+  color: #666;
+  margin: 0;
+  z-index: 1;
+}
+
+/* Position the Budget Input and Label Inside the White Box */
+body > div:first-of-type {
+  position: absolute;
+  top: 180px;
+  right: 55px;
+  margin: 0;
+  font-size: 0.9em;
+  z-index: 1;
+}
+
+/* Style the Budget Input Field */
+#budget {
+  width: 60px;
+  margin-left: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+/* Main White Card for Expense Rows (Left Side) */
+#input_area {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  width: 60%;
+  display: flex;              /* make the card a flex container */
+  flex-direction: column;     /* stack its contents vertically */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0;  /* override any default margins */
+}
+
+/* Faux Table Header via Pseudo-element */
+#input_area::before {
+  content: "Name       Date       Category       Amount";
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #388E3C;  /* green header text to match the screenshot */
+}
+
+/* Expense Rows as a Grid to Align Inputs & Delete Button */
 .input_row {
   display: grid;
-  /* 4 columns for inputs + 1 column for the delete button */
-  grid-template-columns: repeat(4, 1fr) auto;
+  grid-template-columns: repeat(4, 1fr) auto; /* 4 columns + delete button */
   gap: 10px;
   margin-bottom: 10px;
-  align-items: left;
+  align-items: center;
 }
 
-/* Input fields and delete button styling */
+/* Inputs & Buttons Within Each Row */
 .input_box {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-/* Add Expense, Delete buttons, etc. */
+/* Global Button Styling (applies to + Add Expense, Delete, etc.) */
 button {
-  background-color: #4CAF50;
-  color: #ffffff;
-  border: none;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ccc;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  margin-top: 10px;
+  transition: background-color 0.2s ease-in-out;
 }
 
-/* Hover effect for buttons */
 button:hover {
-  background-color: #45a049;
+  background-color: #ddd;
+}
+
+#input_area > button {
+  align-self: center;  
+  order: 1;           
+}
+
+.input_row button {
+  margin-top: 0;
 }
