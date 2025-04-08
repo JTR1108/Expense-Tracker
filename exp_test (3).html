@@ -50,18 +50,100 @@
         <pre id="output"></pre>
     
         <script>
+    
+    
             document.getElementById('fileInput').addEventListener('change', function(event) {
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const content = e.target.result;
-                        document.getElementById('output').innerText = content;
+                        
+                        //  ** AI WAS CONSULTED HERE** -- originally wasn't parsing file 
+                        const rows = content.split('\n').map(row => row.trim()).filter(row => row.length > 0);
+                         
+                        rows.forEach(row => {
+                            const cols = row.split(',').map(col => col.trim());
+                            if (cols.length >= 4) { // Expecting [Name, Date, Category, Price]
+                                
+                                // Create new expense row
+                                var options = ["Misc.", "Food", "Travel", "Groceries", "Fun"];
+                                var new_row = document.createElement("div");
+                                new_row.classList.add("input_row");
+            
+                                var new_name = document.createElement("input");
+                                new_name.type = "text";
+                                new_name.value = cols[0];
+                                new_name.classList.add("input_box");
+
+                                // TO FIX : Date doesn't import fully 
+
+                                var new_date = document.createElement("input");
+                                new_date.type = "date";
+                                new_date.value = cols[1];
+                                new_date.classList.add("input_box");
+            
+                                var new_category = document.createElement("select");
+                                new_category.classList.add("input_box");
+                                options.forEach(function(option_text) {
+                                    var option = document.createElement("option");
+                                    option.value = option_text.toLowerCase();
+                                    option.textContent = option_text;
+                                    new_category.appendChild(option);
+                                });
+
+                                // Set category if it matches
+                                const lowerColsCategory = cols[2].toLowerCase();
+                                const foundOption = options.find(opt => opt.toLowerCase() === lowerColsCategory);
+                                if (foundOption) {
+                                    new_category.value = lowerColsCategory;
+                                } else {
+                                    new_category.value = "misc.";
+                                }
+            
+                                var new_price = document.createElement("input");
+                                new_price.type = "number";
+                                new_price.step = "0.01";
+                                new_price.min = "0.00";
+                                new_price.value = parseFloat(cols[3]).toFixed(2);
+                                new_price.classList.add("input_box");
+            
+                                var new_delete = document.createElement("button");
+                                new_delete.textContent = "Delete";
+                                new_delete.type = "button";
+                                new_delete.classList.add("input_box");
+            
+                                // Add delete functionality
+                                new_delete.onclick = function() {
+                                    delete_expense(new_row);
+                                    calc_sum();
+                                }
+            
+                                // Append inputs
+                                new_row.appendChild(new_name);
+                                new_row.appendChild(new_date);
+                                new_row.appendChild(new_category);
+                                new_row.appendChild(new_price);
+                                new_row.appendChild(new_delete);
+            
+                                // Local variables to track data
+                                new_row.stored_name = cols[0];
+                                new_row.stored_date = cols[1];
+                                new_row.stored_category = new_category.value;
+                                new_row.stored_price = parseFloat(cols[3]).toFixed(2);
+            
+                                // Append to page
+                                document.getElementById("input_area").appendChild(new_row);
+                            }
+                        });
+            
+                        // After import, recalculate the total
+                        calc_sum();
                     };
                     reader.readAsText(file);
                 }
             });
-        </script>
+            </script>
 
     <script>
     
