@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>expense_tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="ExpenseTrackerStyle.css">
+    <style>
+        .input_row{
+            margin-bottom: 5px;
+        }
+        .input_box{
+            padding-bottom: 8px;
+            padding-top: 8px;
+        }
+        .input_zone{
+           background-color: white;
+           border-style: solid;
+           border-color: white;
+           border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body style = "background-color: lightgreen">
+
+    <p id="sum_display">Total: $0.00</p>
+    <p id="budget_display"> No budget entered </p>
+    <div>
+        Budget:
+        <input type="number" id="budget" placeholder="Enter Budget" onchange="set_budget()"> </body>
+    </div>
+    <br>
+    <br>
+    <div class = "input_zone" id = "input_area"></div>
+    <button type="button" onclick="add_expense()">+ Add Expense</button>
+	
+		<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Import CSV File</title>
+    </head>
+    <body>
+        <input type="file" id="fileInput" accept=".csv" />
+        <pre id="output"></pre>
+
+
+    <script>
+    
+    // Declaration for arrays to keep track of info
+    // Also sum variable
+    const names = [];
+    const dates = [];
+    const categories = [];
+    const prices = [];
+    var expense_sum = 0;
+    var user_budget = 0;
+    var difference = 0;
+
+    // Function to set the budget variable and calls the calc_sum function
+    function set_budget() {
+        user_budget = document.getElementById("budget").value;
+        console.log(user_budget);
+        calc_sum();
+
+    }
+        // Function to create a new expense when the button is pushed
+        // Basically everything important
+        function add_expense()
+        {
+            // Array for categories
+            var options = ["Misc.","Food", "Travel", "Groceries", "Fun"];
+
+            // Creates a "div" for the added row
+            var new_row = document.createElement("div");
+            new_row.classList.add("input_row");
+
+            // Creates the new input fields for the expense
+                // Expense name
+                var new_name = document.createElement("input");
+                new_name.type = "text";
+                new_name.placeholder = "Enter Name";
+                new_name.classList.add("input_box");
+
+                // Expense date
+                var new_date = document.createElement("input");
+                new_date.type = "date";
+                new_date.classList.add("input_box");
+
+                // Expense category
+                var new_category = document.createElement("select");
+                new_category.type = "select";
+                new_category.classList.add("input_box");
+
+                // AI was reffered to, turns out it needed to be called as an anonymous function in order for the .forEach to work properly with the array
+                // Gonna call everything as anonymous 
+                // Thanks js, god forbid you work like everything else
+                options.forEach(function(option_text) {
+                    var option = document.createElement("option");
+                    option.value = option_text.toLowerCase();
+                    option.textContent = option_text;
+                    new_category.appendChild(option);
+                });
+
+                new_category.value = "misc.";
+
+                // Expense price
+                var new_price = document.createElement("input");
+                new_price.type = "number";
+                new_price.step = "0.01";
+                new_price.min = "0.00";
+                new_price.placeholder = "Enter Price";
+                new_price.classList.add("input_box");
+
+                // Creates and sets the row's delete button
+                var new_delete = document.createElement("button");
+                new_delete.textContent = "Delete";
+                new_delete.type = "button";
+                new_delete.classList.add("input_box");
+
+                // Written as anonymous once again, set to use the delete_expense function on it's respective "row"
+                new_delete.onclick = function() {
+                    delete_expense(new_row);
+                    calc_sum();
+                }
+
+    
+            // Appends the created fields/button to the new row
+            new_row.appendChild(new_name);
+            new_row.appendChild(new_date);
+            new_row.appendChild(new_category);
+            new_row.appendChild(new_price);
+            new_row.appendChild(new_delete);
+
+            // Variables to store the input info to be read into the arrays set to be local for each new_row
+            new_row.stored_name;
+            new_row.stored_date;
+            new_row.stored_category;
+            new_row.stored_price;
+
+            // Listener events to trigger for whenver the user interacts with the inputs to assign them to their respective variables
+            new_name.addEventListener("change", function() {
+                new_row.stored_name = new_name.value;
+                console.log(new_row.stored_name);
+                calc_sum();
+            });
+
+            new_date.addEventListener("change", function() {
+                new_row.stored_date = new_date.value;
+                console.log(new_row.stored_date);
+                calc_sum();
+            });
+
+            // Temp fix for new_category, won't assign when first created so its set to assign when first interacted with (just clicked on)
+            // TODO: find how to set category to default selection when first created
+            var has_focused = false;
+
+            if(has_focused == false){
+                new_category.addEventListener("focus", function() {
+                    new_row.stored_category = new_category.value;
+                    console.log(new_row.stored_category);
+                    calc_sum();
+                });
+                has_focused = true;
+            }
+            
+            new_category.addEventListener("change", function() {
+                new_row.stored_category = new_category.value;
+                console.log(new_row.stored_category);
+                calc_sum();
+            });
+
+            new_price.addEventListener("change", function() {
+                new_row.stored_price = (parseFloat(new_price.value)).toFixed(2);
+                console.log(new_row.stored_price);
+                calc_sum();
+            });
+
+            // Appends the new row to the overal input area
+            document.getElementById("input_area").appendChild(new_row);
+            calc_sum();
+        }
+
+        // Function for the delete button to remove it's respective row
+        function delete_expense(row){
+            row.remove();
+        }
+       
+        /** First resets all arrays to 0 to remove any old info
+         * Goes through the stored variables in every row adding them to array
+         * Searches through the prices array using .reduce and sets expense_sum to equal the sum of all entries
+         * */
+        function calc_sum(){
+            names.length = 0;
+            dates.length = 0;
+            categories.length = 0;
+            prices.length = 0;
+
+            const rows = document.querySelectorAll("#input_area .input_row");
+
+            rows.forEach(function(row) {
+                names.push(row.stored_name);
+                dates.push(row.stored_date);
+                categories.push(row.stored_category);
+                // Checks if price is actually something before actually pushing it to prices
+                if (row.stored_price == null){
+                    prices.push(0.00);
+                }
+                else{
+                    prices.push(row.stored_price);
+                }
+            });
+
+            // Log tests to see if arrayed correctly.
+            console.log("Names:", names);
+            console.log("Dates:", dates);
+            console.log("Categories:", categories);
+            console.log("Prices:", prices);
+
+            expense_sum = (prices.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0)).toFixed(2);
+            console.log(expense_sum);
+            document.getElementById("sum_display").textContent = 'Total: $' + expense_sum;
+
+            /* If the budget input area is empty or equals 0 it displays that no budget was entered
+            since an empty number input defaults to 00*/
+
+            /* If budget is a number, calculates the difference between the budget and sum and display whether
+            the user is within, over, or exactly at the budget based on said difference*/
+            
+            // TODO: find a way to differentiate between an empty budget input and when the user literally enteres "0" as the budget
+            if(user_budget == 0){
+                document.getElementById("budget_display").textContent = "No budget entered"
+            }
+            else{
+                var difference = (user_budget - expense_sum).toFixed(2);
+                if(difference > 0){
+                    document.getElementById("budget_display").textContent = "$" + difference + " under budget";
+                }
+                else if(difference < 0){
+                    document.getElementById("budget_display").textContent = "$" + Math.abs(difference) + " over budget";
+                }
+                else{
+                    document.getElementById("budget_display").textContent = "On budget";
+                }
+            }
+        }
+
+    </script>
+
+</body>
+</html>
