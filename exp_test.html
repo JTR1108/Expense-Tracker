@@ -31,6 +31,8 @@
         <input type="number" id="budget" placeholder="Enter Budget" onchange="set_budget()"> </body>
     </div>
     <br>
+    <button type="button" onclick="clear_data()"> CLEAR </button>
+    <br>
     <br>
     <div class = "input_zone" id = "input_area"></div>
     <button type="button" onclick="add_expense()">+ Add Expense</button>
@@ -176,6 +178,17 @@
             row.remove();
         }
        
+
+        function clear_data(){
+
+            const rows = document.querySelectorAll("#input_area .input_row");
+            
+            rows.forEach(function(row) {
+                row.remove();
+            });
+
+           calc_sum()
+        }
         /** First resets all arrays to 0 to remove any old info
          * Goes through the stored variables in every row adding them to array
          * Searches through the prices array using .reduce and sets expense_sum to equal the sum of all entries
@@ -221,7 +234,7 @@
             the user is within, over, or exactly at the budget based on said difference*/
             
             // TODO: find a way to differentiate between an empty budget input versus when the user literally enters "0" as the budget
-            if(user_budget == 0){
+            if(user_budget <= 0){
                 document.getElementById("budget_display").textContent = "No budget entered";
                 console.log("NA Difference");
             }
