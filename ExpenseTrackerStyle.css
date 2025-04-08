@@ -83,13 +83,13 @@ body > div:first-of-type {
   top: 100px;
   left: 20px;
   width: 60%;
-  display: flex;              /* make the card a flex container */
-  flex-direction: column;     /* stack its contents vertically */
+  display: flex;             
+  flex-direction: column;     
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin: 0;  /* override any default margins */
+  margin: 0;
 }
 
 /* Faux Table Header via Pseudo-element */
@@ -98,7 +98,7 @@ body > div:first-of-type {
   display: block;
   font-weight: bold;
   margin-bottom: 10px;
-  color: #388E3C;  /* green header text to match the screenshot */
+  color: #388E3C;  
 }
 
 /* Expense Rows as a Grid to Align Inputs & Delete Button */
