@@ -88,12 +88,12 @@
                 // Thanks js, god forbid you work like everything else
                 options.forEach(function(option_text) {
                     var option = document.createElement("option");
-                    option.value = option_text.toLowerCase();
+                    option.value = option_text;
                     option.textContent = option_text;
                     new_category.appendChild(option);
                 });
 
-                new_category.value = "misc.";
+                new_category.value = "Misc.";
 
                 // Expense price
                 var new_price = document.createElement("input");
@@ -145,7 +145,7 @@
 
             // Temp fix for new_category, won't assign when first created so its set to assign when first interacted with (just clicked on)
             // TODO: find how to set category to default selection when first created
-            var has_focused = false;
+            /**var has_focused = false;
 
             if(has_focused == false){
                 new_category.addEventListener("focus", function() {
@@ -154,7 +154,7 @@
                     calc_sum();
                 });
                 has_focused = true;
-            }
+            }*/
             
             new_category.addEventListener("change", function() {
                 new_row.stored_category = new_category.value;
@@ -189,6 +189,7 @@
 
            calc_sum()
         }
+        
         /** First resets all arrays to 0 to remove any old info
          * Goes through the stored variables in every row adding them to array
          * Searches through the prices array using .reduce and sets expense_sum to equal the sum of all entries
@@ -201,11 +202,34 @@
 
             const rows = document.querySelectorAll("#input_area .input_row");
 
+        // Pushes to send the input data into corresponding arrays, check if they're empty or undefined first and then pushed "N/A" or the input accordingly
             rows.forEach(function(row) {
-                names.push(row.stored_name);
-                dates.push(row.stored_date);
-                categories.push(row.stored_category);
-                // Checks if price is actually filled out before pushing it to prices array
+
+                // Push for name
+                if(typeof(row.stored_name) == 'undefined' || row.stored_name == ""){
+                    names.push("N/A")
+                }
+                else{
+                    names.push(row.stored_name);
+                }
+
+                // Push for date
+                if(typeof(row.stored_date) == 'undefined' || row.stored_date == ""){
+                    dates.push("N/A")
+                }
+                else{
+                    dates.push(row.stored_date);
+                }
+
+                // Push for category
+                if(typeof(row.stored_category) == 'undefined'){
+                    categories.push("Misc.")
+                }
+                else{
+                    categories.push(row.stored_category);
+                }
+
+                // Push for price
                 if (isNaN(row.stored_price)){
                     prices.push(0.00);
                 }
@@ -221,7 +245,7 @@
             console.log("Categories:", categories);
             console.log("Prices:", prices);
             
-
+            // Calculates sum and compares it to budget
             expense_sum = (prices.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0)).toFixed(2);
             document.getElementById("sum_display").textContent = 'Total: $' + expense_sum;
             console.log("Total:", expense_sum);
