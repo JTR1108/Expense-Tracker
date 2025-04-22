@@ -143,19 +143,6 @@
                 calc_sum();
             });
 
-            // Temp fix for new_category, won't assign when first created so its set to assign when first interacted with (just clicked on)
-            // TODO: find how to set category to default selection when first created
-            /**var has_focused = false;
-
-            if(has_focused == false){
-                new_category.addEventListener("focus", function() {
-                    new_row.stored_category = new_category.value;
-                    console.log(new_row.stored_category);
-                    calc_sum();
-                });
-                has_focused = true;
-            }*/
-            
             new_category.addEventListener("change", function() {
                 new_row.stored_category = new_category.value;
                 console.log(new_row.stored_category);
@@ -178,7 +165,7 @@
             row.remove();
         }
        
-
+        // Function to clear data
         function clear_data(){
 
             const rows = document.querySelectorAll("#input_area .input_row");
@@ -189,7 +176,7 @@
 
            calc_sum()
         }
-        
+
         /** First resets all arrays to 0 to remove any old info
          * Goes through the stored variables in every row adding them to array
          * Searches through the prices array using .reduce and sets expense_sum to equal the sum of all entries
