@@ -56,7 +56,10 @@ body::after {
 #budget_display {
   position: absolute;
   top: 160px;
-  right: 150px;
+  left: 87%;
+  transform: translateX(-87%);
+  text-align: center;
+  white-space: nowrap;
   font-size: 0.9em;
   color: #666;
   margin: 0;
