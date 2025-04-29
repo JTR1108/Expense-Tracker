@@ -28,7 +28,7 @@
     <p id="budget_display"> No budget entered </p>
     <div>
         Budget:
-        <input type="number" id="budget" placeholder="Enter Budget" onchange="set_budget()"> </body>
+        <input type="number" id="budget" placeholder="Enter Budget" onchange="set_budget()" > </body>
     </div>
     <br>
     <button type="button" onclick="clear_data()"> CLEAR </button>
@@ -50,12 +50,14 @@
     var difference = 0;
 
     // Function to set the budget variable and calls the calc_sum function
-    function set_budget() {
-        user_budget = document.getElementById("budget").value;
-        console.log("Budget: " + user_budget);
-        calc_sum();
+        function set_budget() {
+            const budget_input = document.getElementById("budget");
+            user_budget = parseFloat(budget_input.value).toFixed(2);
+            budget_input.value = user_budget;
 
-    }
+            console.log("Budget: " + user_budget);
+            calc_sum();
+        }
         // Function to create a new expense when the button is pushed
         // Basically everything important
         function add_expense()
@@ -151,6 +153,7 @@
 
             new_price.addEventListener("change", function() {
                 new_row.stored_price = (parseFloat(new_price.value)).toFixed(2);
+                new_price.value = new_row.stored_price;
                 console.log(new_row.stored_price);
                 calc_sum();
             });
@@ -244,8 +247,7 @@
             /* If budget is a number, calculates the difference between the budget and sum and display whether
             the user is within, over, or exactly at the budget based on said difference*/
             
-            // TODO: find a way to differentiate between an empty budget input versus when the user literally enters "0" as the budget
-            if(user_budget <= 0){
+            if(user_budget <= 0 || isNaN(user_budget)){
                 document.getElementById("budget_display").textContent = "No budget entered";
                 console.log("NA Difference");
             }
